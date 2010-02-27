@@ -1,0 +1,202 @@
+Recently I had to go through the boring and frustrating operation of setting up
+my DNS records.
+The syntax is terribly cryptic and all the documentation I could find goes deep
+into technical cruft I don't care about (well I finally had to).
+And once you did your setup, you have to typically wait for 3 to 6 hours for the
+server to propagate your changes, and another 3 to 6 hours to fix that stupid
+typo you left there.
+During that time, you may loose access to your mail and your website.
+
+Here is the result of a few days of fight with my DNS records: a pragmatic guide
+to setting up your domain.
+Enjoy, and don't hesitate to leave comments if you have questions or remarks,
+I'll fix the article from your feedback.
+
+**DISCLAMER**: If you don't have to set up a domain, for your own sake, stop
+reading here, but bookmark this just in case: it will hopefully save you a lot
+of time.
+
+<!-- more -->
+
+#### Set up your domain and a Tumblr subdomain ####
+So here it goes: setup a simple domain with a mail server in 30 seconds.
+Here is the basic setup for my `spswitch.net` domain, considering my Web server
+has the IP `188.165.39.13` and my mail server is located at `mail.spswitch.net`:
+
+	@ 10800 IN A 188.165.39.13
+	* 10800 IN A 188.165.39.13
+	@ 10800 IN MX 10 mail.spswitch.net.
+
+Let's analyze these lines:
+
+1. `spswitch.net` resolves to `188.165.39.13`
+2. all `spswitch.net` subdomains, like `www.spswitch.net` or
+     `blog.spswitch.net`, resolve to `188.165.39.13`
+3. email delivered to every email address that belongs to `spswitch.net`, like
+     `joe@spswitch.net`, is sent to the `SMTP` mail server at
+     `mail.spswitch.net`
+
+<a name="simple_setup"></a>
+Let's say I want to redirect `fred.spswitch.net` to my Tumblr blog.
+The [Tumblr using a custom domain name][] tells me I have to set a `A` record
+for `fred.spswitch.net` to `72.32.231.8`.
+So here is the new DNS configuration:
+
+	@ 10800 IN A 188.165.39.13
+	* 10800 IN A 188.165.39.13
+	fred 10800 IN A 72.32.231.8
+	@ 10800 IN MX 10 mail.spswitch.net.
+
+The new line just says the `fred` subdomain should resolve to `72.32.231.8`.
+That is how you set up an external subdomain.
+You can now freak out until your provider's DNS picks up the changes, and
+[test your configuration][] or read on for Google Apps setup.
+
+
+#### Set up Google Apps for your Domain ####
+I use [Google Apps for your Domain][] (look for the Standard edition) to handle
+my mail, and set up the calendar and docs services just for fun.
+The complete setup here is three folds:
+
+* set your mail DNS records with the
+    [Google Apps MX records configuration guide][]
+* set up your services redirection with the
+    [Google Apps CNAME record creation guide][]
+* set up your chat bridge server with the
+    [Google Apps SRV record creation guide][]
+
+Here is my configuration with all the google mail records enabled:
+
+	@ 10800 IN A 188.165.39.13
+	* 10800 IN A 188.165.39.13
+	fred 10800 IN A 72.32.231.8
+	@ 28800 IN MX 10 aspmx.l.google.com.
+	@ 28800 IN MX 20 alt1.aspmx.l.google.com.
+	@ 28800 IN MX 20 alt2.aspmx.l.google.com.
+	@ 28800 IN MX 30 aspmx2.googlemail.com.
+	@ 28800 IN MX 30 aspmx3.googlemail.com.
+	@ 28800 IN MX 30 aspmx4.googlemail.com.
+	@ 28800 IN MX 30 aspmx5.googlemail.com.
+
+Now with the `mail`, `docs`, `calendar` and `sites` services redirected:
+
+	@ 10800 IN A 188.165.39.13
+	* 10800 IN A 188.165.39.13
+	fred 10800 IN A 72.32.231.8
+	mail 28800 IN CNAME ghs.google.com.
+	docs 28800 IN CNAME ghs.google.com.
+	calendar 28800 IN CNAME ghs.google.com.
+	sites 28800 IN CNAME ghs.google.com.
+	@ 28800 IN MX 10 aspmx.l.google.com.
+	@ 28800 IN MX 20 alt1.aspmx.l.google.com.
+	@ 28800 IN MX 20 alt2.aspmx.l.google.com.
+	@ 28800 IN MX 30 aspmx2.googlemail.com.
+	@ 28800 IN MX 30 aspmx3.googlemail.com.
+	@ 28800 IN MX 30 aspmx4.googlemail.com.
+	@ 28800 IN MX 30 aspmx5.googlemail.com.
+
+And at last, with the chat bridge set up:
+
+	@ 10800 IN A 188.165.39.13
+	* 10800 IN A 188.165.39.13
+	fred 10800 IN A 72.32.231.8
+	mail 28800 IN CNAME ghs.google.com.
+	docs 28800 IN CNAME ghs.google.com.
+	calendar 28800 IN CNAME ghs.google.com.
+	sites 28800 IN CNAME ghs.google.com.
+	_xmpp-server._tcp 28800 IN SRV 5 0 5269 xmpp-server.l.google.com.
+	_xmpp-server._tcp 28800 IN SRV 20 0 5269 xmpp-server1.l.google.com.
+	_xmpp-server._tcp 28800 IN SRV 20 0 5269 xmpp-server2.l.google.com.
+	_xmpp-server._tcp 28800 IN SRV 20 0 5269 xmpp-server3.l.google.com.
+	_xmpp-server._tcp 28800 IN SRV 20 0 5269 xmpp-server4.l.google.com.
+	_jabber._tcp 28800 IN SRV 5 0 5269 xmpp-server.l.google.com.
+	_jabber._tcp 28800 IN SRV 20 0 5269 xmpp-server1.l.google.com.
+	_jabber._tcp 28800 IN SRV 20 0 5269 xmpp-server2.l.google.com.
+	_jabber._tcp 28800 IN SRV 20 0 5269 xmpp-server3.l.google.com.
+	_jabber._tcp 28800 IN SRV 20 0 5269 xmpp-server4.l.google.com.
+	@ 28800 IN MX 10 aspmx.l.google.com.
+	@ 28800 IN MX 20 alt1.aspmx.l.google.com.
+	@ 28800 IN MX 20 alt2.aspmx.l.google.com.
+	@ 28800 IN MX 30 aspmx2.googlemail.com.
+	@ 28800 IN MX 30 aspmx3.googlemail.com.
+	@ 28800 IN MX 30 aspmx4.googlemail.com.
+	@ 28800 IN MX 30 aspmx5.googlemail.com.
+
+
+#### <a name="test"></a> Test your configuration ####
+There are two ways of testing your DNS records: use a website such as
+[Network Tools][] or use the `nslookup` command to test from your own computer.
+I recommend doing both, as DNS is based on propagation and testing from two
+different locations is safer.
+
+Testing with the website gives me the same as with `nslookup`, namely:
+
+	$ nslookup spswitch.net
+	Server:		212.27.40.241
+	Address:	212.27.40.241#53
+
+	Non-authoritative answer:
+	Name:	spswitch.net
+	Address: 188.165.39.13
+
+	$ nslookup fred.spswitch.net
+	Server:		212.27.40.241
+	Address:	212.27.40.241#53
+
+	Non-authoritative answer:
+	Name:	fred.spswitch.net
+	Address: 72.32.231.8
+
+	$ nslookup -querytype=MX spswitch.net
+	Server:		212.27.40.241
+	Address:	212.27.40.241#53
+
+	Non-authoritative answer:
+	spswitch.net	mail exchanger = 10 mail.spswitch.net.
+
+	Authoritative answers can be found from:
+	spswitch.net	nameserver = a.dns.gandi.net.
+	spswitch.net	nameserver = b.dns.gandi.net.
+	spswitch.net	nameserver = c.dns.gandi.net.
+
+I can confirm that `spswitch.net` resolves to `188.165.39.13`,
+`fred.spswitch.net` resolves to `72.32.231.8`, and my mail server is
+`mail.spswitch.net`.
+I didn't configure the Google Apps services on this domain, but you get the
+idea (run `nslookup -querytype=CNAME` for `CNAME` records).
+Remember you may have to wait for a couple of hours for your DNS changes to be
+visible to anyone.
+In the meantime, your old DNS settings are still active.
+Some people may see the changes sooner than other, depending on their DNS
+server, caches and proxies.
+
+
+#### About DNS records ####
+A few remarks about the DNS records format, referring to the [simple setup][]:
+
+* `@` at the beginning of the line means self, `*` means all
+* the `10800` is the DNS refresh time value for the line:
+    if you change a line, it will take 10800 seconds, or 3 hours, for everyone
+    on the internet to see the change
+* `A` means address resolution, `MX` means mail, `CNAME` means address
+    redirection, `SRV` means service (not described here)
+* the `10` value in the MX record means `mail.spswitch.net` has a priority
+    of 10.
+    I could have another MX record for `mail2.spswitch.net` with priority 20
+    that would act as a backup in case `mail.spswitch.net` failed to resolve
+* every time you mention a DNS address, such as `mail.spswitch.net` here, do not
+    forget the trailing dot or it just won't work (this is a DNS
+    convention)
+
+If you want more information, see the [list of DNS record types][] on Wikipedia.
+
+
+[Tumblr using a custom domain name]: http://www.tumblr.com/docs/en/custom_domains
+[test your configuration]: #test
+[Google Apps for your Domain]: https://www.google.com/a/
+[Google Apps MX records configuration guide]: http://www.google.com/support/a/bin/answer.py?answer=33915
+[Google Apps CNAME record creation guide]: http://www.google.com/support/a/bin/answer.py?hl=en&answer=47283
+[Google Apps SRV record creation guide]: http://www.google.com/support/a/bin/answer.py?hl=en&answer=60227
+[Network Tools]: http://network-tools.com/default.asp?prog=dnsrec&host=spswitch.net
+[simple setup]: #simple_setup
+[list of DNS record types]: http://en.wikipedia.org/wiki/List_of_DNS_record_types
