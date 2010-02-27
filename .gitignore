@@ -1,0 +1,7 @@
+# Tools
+Markdown.pl
+SmartyPants.pl
+
+# Generated files
+*.html
+*.rtf
