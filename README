@@ -1,0 +1,16 @@
+Markdown Formatter
+==================
+
+This simple Makefile automates the process of converting [Markdown][]-formatted
+files to HTML.
+The processing also uses [SmartyPants][] to get the dashes right.
+
+To use it, simple create a couple of `.text` files and run `make`.
+It will download Markdown and SmartyPants and create the corresponding HTML
+files.
+
+You will need `GNU Make` and `perl` to make it work.
+RTF generation is also possible on Mac OS X via `textutil`.
+
+[Markdown]: http://daringfireball.net/projects/markdown/
+[SmartyPants]: http://daringfireball.net/projects/smartypants/
