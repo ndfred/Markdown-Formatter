@@ -20,7 +20,7 @@ SmartyPants.pl :
 	rm archive.zip "SmartyPants Readme.txt"
 
 %.html : %.text $(tools)
-	perl Markdown.pl $< | perl SmartyPants.pl >> $@
+	perl Markdown.pl $< | perl SmartyPants.pl > $@
 
 # Output to RTF to check spelling
 # This only work on Mac OS X
