@@ -11,6 +11,7 @@ files.
 
 You will need `GNU Make` and `perl` to make it work.
 RTF generation is also possible on Mac OS X via `textutil`.
+Markdown and SmartyPants both come with BSD-style open source license.
 
 [Markdown]: http://daringfireball.net/projects/markdown/
 [SmartyPants]: http://daringfireball.net/projects/smartypants/
