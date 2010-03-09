@@ -5,7 +5,7 @@ This simple Makefile automates the process of converting [Markdown][]-formatted
 files to HTML.
 The processing also uses [SmartyPants][] to get the typo right.
 
-To use it, simple create a couple of `.text` files and run `make`.
+To use it, simple create a couple of `.mdown` files and run `make`.
 It will download Markdown and SmartyPants and create the corresponding HTML
 files.
 

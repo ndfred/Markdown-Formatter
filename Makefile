@@ -1,8 +1,11 @@
-# Transform Markdown format .text files into HTML
+# Transform Markdown format files into HTML
+
+# Change this to suit your Markdown files extension
+EXTENSION := mdown
 
 tools := Markdown.pl SmartyPants.pl
-objects := $(subst .text,.html,$(wildcard *.text))
-rtf_objects := $(subst .text,.rtf,$(wildcard *.text))
+objects := $(subst .$(EXTENSION),.html,$(wildcard *.$(EXTENSION)))
+rtf_objects := $(subst .$(EXTENSION),.rtf,$(wildcard *.$(EXTENSION)))
 
 .PHONY : clean distclean all allrtf
 
@@ -19,7 +22,7 @@ SmartyPants.pl :
 	unzip -jo archive.zip
 	rm archive.zip "SmartyPants Readme.txt"
 
-%.html : %.text $(tools)
+%.html : %.$(EXTENSION) $(tools)
 	perl Markdown.pl $< | perl SmartyPants.pl > $@
 
 # Output to RTF to check spelling
