@@ -22,8 +22,10 @@ SmartyPants.pl :
 	unzip -jo archive.zip
 	rm archive.zip "SmartyPants Readme.txt"
 
-%.html : %.$(EXTENSION) $(tools)
-	perl Markdown.pl $< | perl SmartyPants.pl > $@
+%.html : %.$(EXTENSION) $(tools) header.tpl footer.tpl
+	cp header.tpl $@
+	perl Markdown.pl $< | perl SmartyPants.pl >> $@
+	cat footer.tpl >> $@
 
 # Output to RTF to check spelling
 # This only work on Mac OS X
